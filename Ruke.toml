@@ -1,0 +1,5 @@
+[tasks.build]
+commands = ["go build -o inus cmd/main.go"]
+
+[tasks.main]
+commands = ["go run cmd/main.go"]

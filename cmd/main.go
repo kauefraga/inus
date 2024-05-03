@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/kauefraga/inus/internal/services"
 )
 
 func main() {
@@ -10,11 +11,7 @@ func main() {
 
 	app.Use(cors.New())
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.JSON(&fiber.Map{
-			"Hello": "Inus!",
-		})
-	})
+	app.Post("/users", services.CreateUser)
 
 	app.Listen(":3000")
 }

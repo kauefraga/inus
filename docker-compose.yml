@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+    database:
+        image: postgres:latest
+        hostname: postgres
+        environment:
+            POSTGRES_DB: inus
+            POSTGRES_PASSWORD: docker
+            POSTGRES_USER: docker
+        ports:
+            - 5432:5432

@@ -1,5 +1,8 @@
+[tasks.main]
+commands = ["go run cmd/main.go"]
+
 [tasks.build]
 commands = ["go build -o inus cmd/main.go"]
 
-[tasks.main]
-commands = ["go run cmd/main.go"]
+[tasks.db]
+commands = ["docker compose up -d"]

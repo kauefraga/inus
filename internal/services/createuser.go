@@ -1,18 +1,18 @@
 package services
 
 import (
+	"database/sql"
 	"log"
 	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kauefraga/inus/internal/database"
 	"github.com/kauefraga/inus/internal/domain"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUser(c *fiber.Ctx) error {
+func CreateUser(c *fiber.Ctx, db *sql.DB) error {
 	user := domain.User{}
 
 	err := c.BodyParser(&user)
@@ -33,8 +33,8 @@ func CreateUser(c *fiber.Ctx) error {
 
 	user.Name = strings.ToLower(user.Name)
 
-	_, ok := database.DB[user.Name]
-	if ok {
+	row := db.QueryRow("SELECT id FROM users WHERE name = $1", user.Name)
+	if row.Scan() == nil {
 		return c.Status(fiber.StatusConflict).JSON(&fiber.Map{
 			"error": "User already exists.",
 		})
@@ -46,9 +46,14 @@ func CreateUser(c *fiber.Ctx) error {
 			"error": "Failed hashing password.",
 		})
 	}
-
 	user.Password = string(hashed)
-	database.DB[user.Name] = user
+
+	_, err = db.Exec("INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", user.Name, user.Email, user.Password)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
+			"error": "Failed inserting user in the database.",
+		})
+	}
 
 	claims := jwt.MapClaims{
 		"authorized": true,

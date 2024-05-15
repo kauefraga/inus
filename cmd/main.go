@@ -27,7 +27,9 @@ func main() {
 		SigningKey: jwtware.SigningKey{Key: []byte("jwtsecretkey")},
 	}))
 
-	// DELETE "/users"
+	app.Delete("/users", func(c *fiber.Ctx) error {
+		return services.DeleteUser(c, db)
+	})
 
 	app.Listen(":3000")
 }

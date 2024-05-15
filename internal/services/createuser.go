@@ -2,7 +2,6 @@ package services
 
 import (
 	"database/sql"
-	"log"
 	"strings"
 	"time"
 
@@ -17,7 +16,9 @@ func CreateUser(c *fiber.Ctx, db *sql.DB) error {
 
 	err := c.BodyParser(&user)
 	if err != nil {
-		log.Println(c.Method(), c.Path(), err)
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+			"error": "Invalid body.",
+		})
 	}
 
 	hasUsernameInvalidlength := len(user.Name) < 4 || len(user.Name) > 50
@@ -33,8 +34,9 @@ func CreateUser(c *fiber.Ctx, db *sql.DB) error {
 
 	user.Name = strings.ToLower(user.Name)
 
-	row := db.QueryRow("SELECT id FROM users WHERE name = $1", user.Name)
-	if row.Scan() == nil {
+	var id int
+	db.QueryRow("SELECT id FROM users WHERE name = $1", user.Name).Scan(&id)
+	if id != 0 {
 		return c.Status(fiber.StatusConflict).JSON(&fiber.Map{
 			"error": "User already exists.",
 		})

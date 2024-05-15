@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kauefraga/inus/internal/domain"
+	"github.com/kauefraga/inus/internal/validators"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -21,16 +22,17 @@ func CreateUser(c *fiber.Ctx, db *sql.DB) error {
 		})
 	}
 
-	hasUsernameInvalidlength := len(user.Name) < 4 || len(user.Name) > 50
-	isUsernameEmpty := len(strings.TrimSpace(user.Name)) == 0
-
-	if hasUsernameInvalidlength || isUsernameEmpty {
+	if validators.IsUserNameInvalid(user.Name) {
 		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 			"error": "Username invalid. Username must have more than 3 and less than 51 characters.",
 		})
 	}
 
-	// TODO: validate user e-mail
+	if validators.IsEmailInvalid(user.Email) {
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+			"error": "E-mail invalid. E-mail must not be empty.",
+		})
+	}
 
 	user.Name = strings.ToLower(user.Name)
 

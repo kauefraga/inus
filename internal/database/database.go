@@ -6,16 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func Connect() *sql.DB {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	connString := "postgresql://docker:docker@localhost:5432/inus?sslmode=disable"
 
 	if os.Getenv("APP_ENV") == "production" {

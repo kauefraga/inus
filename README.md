@@ -1,5 +1,9 @@
 # Inus
 
+![GitHub top language](https://img.shields.io/github/languages/top/kauefraga/inus)
+![GitHub's license](https://img.shields.io/github/license/kauefraga/inus)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/kauefraga/inus/main)
+
 > Um sistema confiável de login/logout. Veja o cliente em [inuc](https://github.com/kauefraga/inuc).
 
 Contextualizando, inus e [inuc](https://github.com/kauefraga/inuc) são as duas partes de um só projeto, o inu. A palavra "*inu*" vem do japonês e traduz para "cachorro", um animal confiável e fenomenal.
@@ -9,7 +13,23 @@ Contextualizando, inus e [inuc](https://github.com/kauefraga/inuc) são as duas 
 - inu + **c**lient :: inuc
 - inu + **s**erver :: inus
 
-Resumindo o funcionamento do sistema é o seguinte: uma rota para **criação** de uma conta, outra para efetuar o **login** de uma conta e, por último, uma rota para **excluir** uma conta. Para mais detalhes, confira a seção [entendendo o sistema](#entendendo-o-sistema).
+Resumindo a interface do sistema: uma rota para **criação** de uma conta, outra para efetuar o **login** de uma conta e, por último, uma rota para **excluir** uma conta. Para mais detalhes, confira a seção [entendendo o sistema](#entendendo-o-sistema).
+
+## Ambiente de produção
+
+Atualmente o servidor está hospedado/rodando na plataforma [render.com](https://render.com/) e o banco de dados (Postgres) que está sendo usado é o da [supabase](https://supabase.com/).
+
+O servidor precisa de três variáveis de ambiente:
+
+- `JWT_SECRET_KEY`
+- `DB_PASSWORD`
+- `DB_USER`
+
+## Ambiente de desenvolvimento
+
+Com as dependências instaladas, a aplicação é executada com o comando `go run cmd/main.go`.
+
+O banco de dados está sendo simulado com Docker e uma imagem do Postgres, como descrito no arquivo [`docker-compose.yml`](docker-compose.yml). Na inicialização do banco de dados, um código SQL é executado para criar a tabela de usuários ([`init.sql`](init.sql)).
 
 ## Entendendo o sistema
 
@@ -53,3 +73,11 @@ Com o hash em mãos, a senha da requisição é comparada ao hash da mesma. Caso
 O servidor recebe uma requisição DELETE na rota `/users` e pega o nome de usuário que está no payload do token JWT. Caso não tenha um token, o usuário não está autenticado e, por conseguinte, não pode excluir tal conta.
 
 Com o nome do usuário, um `DELETE` COM `WHERE` é executado. Apenas o código de status 204 (*no content*) é retornado no sucesso dessa operação de exclusão.
+
+## Licença
+
+Este projeto está sob licença do MIT - Veja a [LICENÇA](https://github.com/kauefraga/inus/blob/main/LICENSE) para mais informações.
+
+---
+
+Feito com ❤ e 🐿 por Kauê Fraga Rodrigues.

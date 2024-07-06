@@ -73,8 +73,15 @@ func CreateUser(c *fiber.Ctx, db *sql.DB) error {
 		})
 	}
 
-	// TODO: send a cookie instead of a response body
+	c.Cookie(&fiber.Cookie{
+		Name:     "auth",
+		Value:    tokenString,
+		Expires:  time.Now().Add(time.Hour * 6),
+		HTTPOnly: true,
+	})
+
 	return c.Status(201).JSON(&fiber.Map{
-		"token": tokenString,
+		"email": user.Email,
+		"name":  user.Name,
 	})
 }

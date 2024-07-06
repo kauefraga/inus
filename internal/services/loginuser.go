@@ -37,7 +37,7 @@ func LoginUser(c *fiber.Ctx, db *sql.DB) error {
 	var password string
 	err = db.QueryRow("SELECT password FROM users WHERE name = $1", user.Name).Scan(&password)
 	if err != nil {
-		return c.Status(fiber.StatusConflict).JSON(&fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 			"error": "User does not exist.",
 		})
 	}
@@ -45,6 +45,7 @@ func LoginUser(c *fiber.Ctx, db *sql.DB) error {
 	err = bcrypt.CompareHashAndPassword([]byte(password), []byte(user.Password))
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			// telling that just password is incorrect may be a secure issue
 			"error": "The given password does not match with the actual user password.",
 		})
 	}
@@ -63,8 +64,12 @@ func LoginUser(c *fiber.Ctx, db *sql.DB) error {
 		})
 	}
 
-	// TODO: send a cookie instead of a response body
-	return c.JSON(&fiber.Map{
-		"token": tokenString,
+	c.Cookie(&fiber.Cookie{
+		Name:     "auth",
+		Value:    tokenString,
+		Expires:  time.Now().Add(time.Hour * 6),
+		HTTPOnly: true,
 	})
+
+	return c.SendStatus(fiber.StatusOK)
 }

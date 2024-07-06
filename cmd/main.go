@@ -15,11 +15,11 @@ func main() {
 	db := database.Connect()
 	defer db.Close()
 
-	app.Post("/users", func(c *fiber.Ctx) error {
+	app.Post("/v1/user/create", func(c *fiber.Ctx) error {
 		return services.CreateUser(c, db)
 	})
 
-	app.Post("/login", func(c *fiber.Ctx) error {
+	app.Post("/v1/user/login", func(c *fiber.Ctx) error {
 		return services.LoginUser(c, db)
 	})
 
@@ -27,7 +27,7 @@ func main() {
 		SigningKey: jwtware.SigningKey{Key: []byte("jwtsecretkey")},
 	}))
 
-	app.Delete("/users", func(c *fiber.Ctx) error {
+	app.Delete("/v1/user/delete", func(c *fiber.Ctx) error {
 		return services.DeleteUser(c, db)
 	})
 
